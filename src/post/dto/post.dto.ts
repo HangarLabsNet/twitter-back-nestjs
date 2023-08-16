@@ -1,6 +1,7 @@
 export class ReadPostDto {
-  id: number;
+  id: string;
   content: string;
+  creationDt: string
 }
 
 export class CreatePostDto {
