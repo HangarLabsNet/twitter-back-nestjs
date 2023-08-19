@@ -1,4 +1,6 @@
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { Type, applyDecorators } from "@nestjs/common";
+import { ApiExtraModels, ApiOkResponse, DocumentBuilder, SwaggerModule, getSchemaPath } from "@nestjs/swagger";
+import { PageDto } from "./common.dto";
 
 
 export const setupSwagger = function(app) {
@@ -7,7 +9,6 @@ export const setupSwagger = function(app) {
       .setTitle("Twitter API")
       .setDescription("The Twitter API description")
       .setVersion("1.0")
-      .addTag("posts")
       .build();
   
       SwaggerModule.setup(
@@ -17,3 +18,29 @@ export const setupSwagger = function(app) {
       );
     }
 }
+
+// https://pietrzakadrian.com/blog/how-to-create-pagination-in-nestjs-with-typeorm-swagger
+//
+// export const ApiPaginatedResponse = <TModel extends Type<any>>(
+//   model: TModel
+// ) => {
+//   return applyDecorators(
+//     ApiExtraModels(PageDto),
+//     ApiOkResponse({
+//       description: "Successfully received model list",
+//       schema: {
+//         allOf: [
+//           { $ref: getSchemaPath(PageDto) },
+//           {
+//             properties: {
+//               data: {
+//                 type: "array",
+//                 items: { $ref: getSchemaPath(model) },
+//               },
+//             },
+//           },
+//         ],
+//       },
+//     })
+//   );
+// };
