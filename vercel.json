@@ -1,5 +1,7 @@
 {
   "functions": {
-    "src/main.ts": {}
+    "src/main.ts": {
+      "memory": "512"
+    }
   }
 }
