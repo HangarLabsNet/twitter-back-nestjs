@@ -2,7 +2,7 @@ name: Deploy backend
 
 on:
   push:
-    branches: [ main, f* ]
+    branches: [ main ]
   pull_request:
     types:
       - opened
