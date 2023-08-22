@@ -44,6 +44,13 @@ Resources:
               - Effect: Allow
                 Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents']
                 Resource: '*'
+  
+  ApiGatewayInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref MyLambdaFunction
+      Principal: apigateway.amazonaws.com
 
   MyApi:
     Type: AWS::ApiGatewayV2::Api
@@ -69,55 +76,40 @@ Resources:
         - - integrations
           - !Ref MyIntegration
 
-  MyDeployment:
-    Type: AWS::ApiGatewayV2::Deployment
-    DependsOn:
-      - MyRoute
-    Properties:
-      ApiId: !Ref MyApi
-
   MyStage:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
       StageName: Prod
       ApiId: !Ref MyApi
-      # DeploymentId: !Ref MyDeployment
       AutoDeploy: true
-      AccessLogSettings:
-        DestinationArn: !GetAtt ApiGatewayLogGroup.Arn
-        Format: '{ "requestId":"$context.requestId", "ip":"$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
+      # AccessLogSettings:
+      #   DestinationArn: !GetAtt ApiGatewayLogGroup.Arn
+      #   Format: '{ "requestId":"$context.requestId", "ip":"$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
   
-  ApiGatewayLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/apigateway/${MyApi}/access"
-
-  ApiGatewayLogRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: apigateway.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: ApiGatewayLogPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: ['logs:CreateLogStream', 'logs:PutLogEvents']
-                Resource:
-                  - !GetAtt ApiGatewayLogGroup.Arn
-  
-  ApiGatewayInvokePermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref MyLambdaFunction
-      Principal: apigateway.amazonaws.com
+  # ApiGatewayLogGroup:
+  #   Type: AWS::Logs::LogGroup
+  #   Properties:
+  #     LogGroupName: !Sub "/aws/apigateway/${MyApi}/access"
+# 
+  # ApiGatewayLogRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service: apigateway.amazonaws.com
+  #           Action: sts:AssumeRole
+  #     Policies:
+  #       - PolicyName: ApiGatewayLogPolicy
+  #         PolicyDocument:
+  #           Version: '2012-10-17'
+  #           Statement:
+  #             - Effect: Allow
+  #               Action: ['logs:CreateLogStream', 'logs:PutLogEvents']
+  #               Resource:
+  #                 - !GetAtt ApiGatewayLogGroup.Arn
 
 Outputs:
   ApiGatewayEndpoint:
