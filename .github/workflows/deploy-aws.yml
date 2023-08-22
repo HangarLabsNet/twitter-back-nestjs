@@ -39,7 +39,7 @@ jobs:
         run: |
           npm i
           npm run build
-          zip -r package.zip .
+          zip -rq package.zip .
           du -hs *
     
       - name: Configure AWS credentials
