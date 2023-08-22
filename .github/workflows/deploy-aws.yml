@@ -53,7 +53,7 @@ jobs:
           aws cloudformation deploy \
             --stack-name HangarTeam1Twitter \
             --template-file ./deployment/stack.yml \
-            --parameters \
+            --parameter-overrides \
               ParameterKey=LambdaCodeS3Bucket,ParameterValue=${{ env.AWS_BUCKET }} \
               ParameterKey=LambdaCodeS3Key,ParameterValue=package.zip \
             --capabilities CAPABILITY_IAM
