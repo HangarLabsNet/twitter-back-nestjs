@@ -45,8 +45,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${AWS_GITHUB_ROLE}
-          aws-region: ${AWS_REGION}
+          role-to-assume: ${{ vars.AWS_GITHUB_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
       
       - name: Upload package to aws bucket
         run: |
