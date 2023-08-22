@@ -50,4 +50,10 @@ jobs:
       
       - name: Deploy stack to Cloudformation
         run: |
-          aws cloudformation deploy --stack-name HangarTeam1Twitter --template-file ./deployment/stack.yml
+          aws cloudformation deploy \
+            --stack-name HangarTeam1Twitter \
+            --template-file ./deployment/stack.yml \
+            --parameters \
+              ParameterKey=LambdaCodeS3Bucket,ParameterValue=${{ env.AWS_GITHUB_ROLE }} \
+              ParameterKey=LambdaCodeS3Key,ParameterValue=package.zip \
+            --capabilities CAPABILITY_IAM
