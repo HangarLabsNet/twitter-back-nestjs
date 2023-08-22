@@ -1,0 +1,49 @@
+name: Deploy backend
+
+on:
+  push:
+    branches: [ main, f* ]
+  pull_request:
+    types:
+      - opened
+
+env:
+  AWS_REGION: us-east-1
+  AWS_BUCKET: hangarteam1-bucket
+  AWS_GITHUB_ROLE: arn:aws:iam::171854407253:role/github-actions
+  AWS_EC2_METADATA_DISABLED: true
+
+jobs:
+
+  deploy:
+    name: "Deploy to aws"
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies and build
+        run: |
+          pnpm i
+          pnpm build
+          zip -r package.zip .
+          du -hs *
+    
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: $AWS_GITHUB_ROLE
+          aws-region: $AWS_REGION
+      
+      - name: Upload package to aws bucket
+        run: |
+          aws s3 cp ./package.zip s3://$AWS_BUCKET/package.zip

@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@fastify/aws-lambda':
+    specifier: ^3.3.0
+    version: 3.3.0
   '@fastify/static':
     specifier: ^6.10.2
     version: 6.10.2
@@ -26,6 +29,9 @@ dependencies:
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
+  fastify:
+    specifier: ^4.21.0
+    version: 4.21.0
   knex:
     specifier: ^2.5.1
     version: 2.5.1(pg@8.11.2)
@@ -226,6 +232,10 @@ packages:
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       fast-uri: 2.2.0
+    dev: false
+
+  /@fastify/aws-lambda@3.3.0:
+    resolution: {integrity: sha512-C/FQH1+OiJcaiL61w5OEkVa1OZsNVZHSuSt6touCnZ1tYEyx/9Uwy381EchLi/K5g4SIRR18pAXlzW4lF9IA9g==}
     dev: false
 
   /@fastify/cors@8.3.0:
