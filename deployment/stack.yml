@@ -11,12 +11,20 @@ Resources:
   MyLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
+      # FunctionName: 
       Code:
         S3Bucket: !Ref LambdaCodeS3Bucket
         S3Key: !Ref LambdaCodeS3Key
-      Handler: index.handler
+      Handler: dist/src/serverless.handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: nodejs18.x
+      Timeout: 20
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_CLIENT: pg
+          DB_CONNECTION_STRING: postgresql://postgres:124356@localhost:5432/twitter?schema=public
+          SWAGGER_PATH: docs
 
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -41,11 +49,13 @@ Resources:
     Type: AWS::ApiGatewayV2::Api
     Properties:
       Name: MyAPI
+      ProtocolType: HTTP
 
   MyIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId: !Ref MyApi
+      PayloadFormatVersion: '1.0'
       IntegrationType: AWS_PROXY
       IntegrationUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambdaFunction.Arn}/invocations
 
@@ -61,15 +71,53 @@ Resources:
 
   MyDeployment:
     Type: AWS::ApiGatewayV2::Deployment
+    DependsOn:
+      - MyRoute
     Properties:
       ApiId: !Ref MyApi
 
   MyStage:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
-      ApiId: !Ref MyApi
-      DeploymentId: !Ref MyDeployment
       StageName: Prod
+      ApiId: !Ref MyApi
+      # DeploymentId: !Ref MyDeployment
+      AutoDeploy: true
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiGatewayLogGroup.Arn
+        Format: '{ "requestId":"$context.requestId", "ip":"$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
+  
+  ApiGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/apigateway/${MyApi}/access"
+
+  ApiGatewayLogRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ApiGatewayLogPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ['logs:CreateLogStream', 'logs:PutLogEvents']
+                Resource:
+                  - !GetAtt ApiGatewayLogGroup.Arn
+  
+  ApiGatewayInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref MyLambdaFunction
+      Principal: apigateway.amazonaws.com
 
 Outputs:
   ApiGatewayEndpoint:
