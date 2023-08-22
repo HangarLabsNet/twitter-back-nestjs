@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Crea un bucket S3 y configura proveedor IODC para conexión de Github Actions
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Nombre para el nuevo bucket S3.
+  RoleName:
+    Type: String
+    Description: Nombre del rol para Github Actions.
+    Default: "github-actions"
+  GitHubOrg:
+    Type: String
+    Description: Nombre de la organización o usuario de Github (case sensitive).
+  GitHubRepositoryName:
+    Type: String
+    Description: Nombre del repositorio de Github (case sensitive).
+  OIDCProviderArn:
+    Type: String
+    Description: (Opcional) Arn del proveedor OIDC de Github.
+    Default: ""
+  OIDCAudience:
+    Type: String
+    Description: Audience que se le pase a configure-aws-credentials.
+    Default: "sts.amazonaws.com"
+
+Conditions:
+  CreateOIDCProvider: !Equals 
+    - !Ref OIDCProviderArn
+    - ""
+
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref BucketName
+  IAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !If 
+                - CreateOIDCProvider
+                - !Ref GithubOidc
+                - !Ref OIDCProviderArn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: !Ref OIDCAudience
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepositoryName}:*
+  IAMRolePolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: AdminPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: '*'
+            Resource: '*'
+      Roles:
+        - !Ref IAMRole
+  GithubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateOIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: 
+        - sts.amazonaws.com
+      ThumbprintList:
+        - ffffffffffffffffffffffffffffffffffffffff
+
+Outputs:
+  Role:
+    Value: !GetAtt IAMRole.Arn

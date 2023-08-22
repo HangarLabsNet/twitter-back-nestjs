@@ -1,0 +1,118 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  LambdaCodeS3Bucket:
+    Type: String
+    Description: Nombre del bucket de S3 que contiene el código de la función Lambda
+  LambdaCodeS3Key:
+    Type: String
+    Description: Ruta del archivo ZIP en el bucket de S3
+
+Resources:
+  MyLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      # FunctionName: 
+      Code:
+        S3Bucket: !Ref LambdaCodeS3Bucket
+        S3Key: !Ref LambdaCodeS3Key
+      Handler: dist/src/serverless.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: nodejs18.x
+      Timeout: 20
+      MemorySize: 512
+      Environment:
+        Variables:
+          DB_CLIENT: pg
+          DB_CONNECTION_STRING: postgresql://postgres:124356@localhost:5432/twitter?schema=public
+          SWAGGER_PATH: docs
+          SWAGGER_API_BASE_PATH: default
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents']
+                Resource: '*'
+  
+  ApiGatewayInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref MyLambdaFunction
+      Principal: apigateway.amazonaws.com
+
+  MyApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: MyAPI
+      ProtocolType: HTTP
+
+  MyIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref MyApi
+      PayloadFormatVersion: '1.0'
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambdaFunction.Arn}/invocations
+
+  MyRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref MyApi
+      RouteKey: ANY /{proxy+}
+      Target: !Join
+        - /
+        - - integrations
+          - !Ref MyIntegration
+
+  MyStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      StageName: default
+      ApiId: !Ref MyApi
+      AutoDeploy: true
+      # AccessLogSettings:
+      #   DestinationArn: !GetAtt ApiGatewayLogGroup.Arn
+      #   Format: '{ "requestId":"$context.requestId", "ip":"$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":"$context.status", "protocol":"$context.protocol", "responseLength":"$context.responseLength" }'
+  
+  # ApiGatewayLogGroup:
+  #   Type: AWS::Logs::LogGroup
+  #   Properties:
+  #     LogGroupName: !Sub "/aws/apigateway/${MyApi}/access"
+# 
+  # ApiGatewayLogRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service: apigateway.amazonaws.com
+  #           Action: sts:AssumeRole
+  #     Policies:
+  #       - PolicyName: ApiGatewayLogPolicy
+  #         PolicyDocument:
+  #           Version: '2012-10-17'
+  #           Statement:
+  #             - Effect: Allow
+  #               Action: ['logs:CreateLogStream', 'logs:PutLogEvents']
+  #               Resource:
+  #                 - !GetAtt ApiGatewayLogGroup.Arn
+
+Outputs:
+  ApiGatewayEndpoint:
+    Description: URL del API Gateway
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/default/"

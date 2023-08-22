@@ -1,7 +1,4 @@
-import { Type, applyDecorators } from "@nestjs/common";
-import { ApiExtraModels, ApiOkResponse, DocumentBuilder, SwaggerModule, getSchemaPath } from "@nestjs/swagger";
-import { PageDto } from "./common.dto";
-
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 export const setupSwagger = function(app) {
   if (process.env.SWAGGER_PATH) {
@@ -9,6 +6,7 @@ export const setupSwagger = function(app) {
       .setTitle("Twitter API")
       .setDescription("The Twitter API description")
       .setVersion("1.0")
+      .setBasePath(process.env.SWAGGER_API_BASE_PATH ?? '')
       .build();
   
       SwaggerModule.setup(
