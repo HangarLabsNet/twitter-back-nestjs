@@ -54,6 +54,6 @@ jobs:
             --stack-name HangarTeam1Twitter \
             --template-file ./deployment/stack.yml \
             --parameter-overrides \
-              ParameterKey=LambdaCodeS3Bucket,ParameterValue=${{ env.AWS_BUCKET }} \
-              ParameterKey=LambdaCodeS3Key,ParameterValue=package.zip \
+              LambdaCodeS3Bucket=${{ env.AWS_BUCKET }} \
+              LambdaCodeS3Key=package.zip \
             --capabilities CAPABILITY_IAM
