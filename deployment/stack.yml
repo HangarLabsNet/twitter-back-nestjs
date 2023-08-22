@@ -25,6 +25,7 @@ Resources:
           DB_CLIENT: pg
           DB_CONNECTION_STRING: postgresql://postgres:124356@localhost:5432/twitter?schema=public
           SWAGGER_PATH: docs
+          SWAGGER_API_BASE_PATH: default
 
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -79,7 +80,7 @@ Resources:
   MyStage:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
-      StageName: Prod
+      StageName: default
       ApiId: !Ref MyApi
       AutoDeploy: true
       # AccessLogSettings:
@@ -114,4 +115,4 @@ Resources:
 Outputs:
   ApiGatewayEndpoint:
     Description: URL del API Gateway
-    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/default/"
