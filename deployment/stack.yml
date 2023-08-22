@@ -1,11 +1,19 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  LambdaCodeS3Bucket:
+    Type: String
+    Description: Nombre del bucket de S3 que contiene el código de la función Lambda
+  LambdaCodeS3Key:
+    Type: String
+    Description: Ruta del archivo ZIP en el bucket de S3
+
 Resources:
   MyLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket: my-lambda-bucket
-        S3Key: lambda-code.zip
+        S3Bucket: !Ref LambdaCodeS3Bucket
+        S3Key: !Ref LambdaCodeS3Key
       Handler: index.handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: nodejs18.x
@@ -66,4 +74,4 @@ Resources:
 Outputs:
   ApiGatewayEndpoint:
     Description: URL del API Gateway
-    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"  
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
