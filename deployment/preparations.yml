@@ -34,6 +34,11 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref BucketName
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteAfterOneDay
+            Status: Enabled
+            ExpirationInDays: 1
   IAMRole:
     Type: AWS::IAM::Role
     Properties:

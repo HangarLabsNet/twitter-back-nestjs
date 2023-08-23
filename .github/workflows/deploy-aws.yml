@@ -3,14 +3,10 @@ name: Deploy backend
 on:
   push:
     branches: [ main ]
-  pull_request:
-    types:
-      - opened
 
 env:
   AWS_REGION: us-east-1
   AWS_BUCKET: hangarteam1-bucket
-  AWS_GITHUB_ROLE: arn:aws:iam::171854407253:role/github-actions
   AWS_EC2_METADATA_DISABLED: true
 
 jobs:
@@ -36,17 +32,17 @@ jobs:
           npm i
           npm run build
           zip -rq package.zip .
-          du -hs *
+          du -hs package.zip
     
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ env.AWS_GITHUB_ROLE }}
+          role-to-assume: ${{ secrets.AWS_GITHUB_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
       
       - name: Upload package to aws bucket
         run: |
-          aws s3 cp ./package.zip s3://$AWS_BUCKET/package-$GITHUB_SHA.zip
+          aws s3 cp --quiet ./package.zip s3://$AWS_BUCKET/package-$GITHUB_SHA.zip
       
       - name: Deploy stack to Cloudformation
         run: |
