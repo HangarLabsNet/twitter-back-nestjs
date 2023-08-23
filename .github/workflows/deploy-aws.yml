@@ -46,7 +46,7 @@ jobs:
       
       - name: Upload package to aws bucket
         run: |
-          aws s3 cp ./package.zip s3://$AWS_BUCKET/package-${{ env.GITHUB_SHA }}.zip
+          aws s3 cp ./package.zip s3://$AWS_BUCKET/package-$GITHUB_SHA.zip
       
       - name: Deploy stack to Cloudformation
         run: |
@@ -55,5 +55,5 @@ jobs:
             --template-file ./deployment/stack.yml \
             --parameter-overrides \
               LambdaCodeS3Bucket=${{ env.AWS_BUCKET }} \
-              LambdaCodeS3Key=package-${{ env.GITHUB_SHA }}.zip \
+              LambdaCodeS3Key=package-$GITHUB_SHA.zip \
             --capabilities CAPABILITY_IAM
