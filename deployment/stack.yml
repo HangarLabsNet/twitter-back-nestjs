@@ -23,7 +23,6 @@ Resources:
       Environment:
         Variables:
           DB_CLIENT: pg
-          DB_CONNECTION_STRING: postgresql://postgres:124356@localhost:5432/twitter?schema=public
           SWAGGER_PATH: docs
           SWAGGER_API_BASE_PATH: /default
           JWT_TOKEN_EXPIRATION: 600s
