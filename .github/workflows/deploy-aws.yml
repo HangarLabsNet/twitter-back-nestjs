@@ -31,6 +31,7 @@ jobs:
         run: |
           npm i
           npm run build
+          echo "JWT_SECRET = "${{ secrets.JWT_SECRET }} >> .env
           zip -rq package.zip .
           du -hs package.zip
     
