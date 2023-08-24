@@ -2,7 +2,6 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import knex from 'knex'
 import { Model } from 'objection';
 
-
 @Injectable()
 export class ObjectionService implements OnModuleInit {
   onModuleInit() {

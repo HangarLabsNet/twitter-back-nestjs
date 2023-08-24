@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePostDto, ReadPostDto } from './dto/post.dto';
+import { CreatePostDto, ReadPostDto } from './post.dto';
 import { PageDto } from 'src/common.dto';
 
 @Injectable()

@@ -19,7 +19,7 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: nodejs18.x
       Timeout: 20
-      MemorySize: 512
+      MemorySize: 256
       Environment:
         Variables:
           DB_CLIENT: pg
