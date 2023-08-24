@@ -1,11 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto, ReadPostDto } from './post.dto';
 import { PageDto } from 'src/common.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('posts')
 @ApiTags("posts")
+@ApiBearerAuth()
 export class PostController {
   constructor(private postService: PostService) {}
 
