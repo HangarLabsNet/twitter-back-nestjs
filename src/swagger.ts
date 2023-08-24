@@ -5,6 +5,7 @@ export const setupSwagger = function(app) {
     const builder = new DocumentBuilder()
       .setTitle("Twitter API")
       .setDescription("The Twitter API description")
+      .addBearerAuth()
       .setVersion("1.0");
     
     if (process.env.SWAGGER_API_BASE_PATH) {

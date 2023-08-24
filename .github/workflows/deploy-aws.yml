@@ -2,7 +2,7 @@ name: Deploy backend
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, f* ]
 
 env:
   AWS_REGION: us-east-1
@@ -21,6 +21,11 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Include secrets # Esta técnica solo para casos simples
+        run: |
+          echo "JWT_SECRET = "${{ secrets.JWT_SECRET }} >> .env
+          echo "DB_CONNECTION_STRING = "${{ secrets.DB_CONNECTION_STRING }} >> .env
 
       - name: Setup NodeJs
         uses: actions/setup-node@v3
