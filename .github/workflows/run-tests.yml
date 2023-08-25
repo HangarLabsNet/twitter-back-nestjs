@@ -3,6 +3,13 @@ name: Run tests
 on:
   push
 
+env:
+  # modes: pretty, plain (default)
+  DB_CLIENT: pg
+  DB_CONNECTION_STRING: test
+  JWT_SECRET: 12435687
+  JWT_TOKEN_EXPIRATION: 10s
+
 jobs:
 
   test:
