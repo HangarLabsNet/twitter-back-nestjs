@@ -1,0 +1,34 @@
+name: Run tests
+
+on:
+  push
+
+env:
+  # modes: pretty, plain (default)
+  DB_CLIENT: pg
+  DB_CONNECTION_STRING: test
+  JWT_SECRET: 12435687
+  JWT_TOKEN_EXPIRATION: 10s
+
+jobs:
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          npm i
+      
+      - name: Run tests
+        run: |
+          npx jest
