@@ -4,12 +4,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { Public } from './jwt-auth.guard';
+import { UserService } from 'src/user/user.service';
 
 @Controller('auth')
 @ApiTags("auth")
 export class AuthController {
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService
   ) {}
 
   @Post("login")
@@ -22,9 +24,9 @@ export class AuthController {
 
   @Post("signup")
   @HttpCode(200)
+  @Public()
   async signup(@Body() data: SignupDto) {
-    return {
-      "token": "123asd"
-    }
+    const user = await this.userService.create(data)
+    return this.authService.login(user)
   }
 }
