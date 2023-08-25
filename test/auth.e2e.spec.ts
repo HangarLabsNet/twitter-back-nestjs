@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-config({ debug: true })
+config()
 
 import { Test } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from "@nestjs/platform-fastify"
