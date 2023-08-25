@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { Public } from './jwt-auth.guard';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 @ApiTags("auth")

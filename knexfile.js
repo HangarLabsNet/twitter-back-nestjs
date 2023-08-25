@@ -6,9 +6,7 @@ dotenv.config()
  */
 module.exports = {
   client: process.env.DB_CLIENT,
-  connection: {
-    connectionString: process.env.DB_CONNECTION_STRING
-  },
+  connection: process.env.DB_CONNECTION_STRING,
   pool: {
     min: 0,
     max: 10

@@ -43,6 +43,7 @@
     "@types/node": "^20.4.7",
     "@types/passport-jwt": "^3.0.9",
     "@types/passport-local": "^1.0.35",
+    "better-sqlite3": "^8.5.2",
     "jest": "^29.6.4",
     "pino-pretty": "^10.2.0",
     "standard": "^17.1.0",
