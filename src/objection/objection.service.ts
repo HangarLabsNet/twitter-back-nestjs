@@ -1,5 +1,5 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import knex from 'knex'
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Model } from 'objection';
 
 @Injectable()
@@ -14,7 +14,6 @@ export class ObjectionService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy() {
-    console.log('onModuleDestroy')
     Model.knex().destroy()
   }
 }
