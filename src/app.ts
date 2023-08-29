@@ -6,18 +6,18 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
 import { setupSwagger } from './swagger';
-import  * as fastify from 'fastify'
+import { FastifyInstance } from 'fastify';
 
 export async function createApp(): 
   Promise<{ 
     app: NestFastifyApplication, 
-    instance: fastify.FastifyInstance 
+    instance: FastifyInstance
   }> {
-  const instance = fastify()
+  const fastifyAdapter = new FastifyAdapter()
 
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule, 
-    new FastifyAdapter(instance),
+    fastifyAdapter,
     { bufferLogs: true }
   );
   app.useLogger(app.get(Logger))
@@ -25,5 +25,5 @@ export async function createApp():
   
   await app.init();
 
-  return { app, instance };
+  return { app, instance: fastifyAdapter.getInstance() };
 }
