@@ -6,5 +6,5 @@ export JWT_TOKEN_EXPIRATION=10s
 
 ###
 
-npm run migrate:recreate
-npx jest
+yarn migrate:recreate
+yarn jest
