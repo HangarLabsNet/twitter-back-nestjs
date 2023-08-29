@@ -34,7 +34,7 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          yarn i
+          yarn
           yarn build
           zip -rq package.zip .
           du -hs package.zip
