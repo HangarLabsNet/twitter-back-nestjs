@@ -34,8 +34,8 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          npm i
-          npm run build
+          yarn i
+          yarn build
           zip -rq package.zip .
           du -hs package.zip
     
