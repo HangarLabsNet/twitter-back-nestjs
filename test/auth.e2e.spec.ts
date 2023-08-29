@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-config({ debug: true })
+config()
 
 import { Test } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from "@nestjs/platform-fastify"
@@ -33,13 +33,48 @@ describe('Auth', () => {
 
   let accessToken
 
+  it(`POST /auth/signup`, () => {
+    return app
+      .inject({
+        method: 'POST',
+        url: '/auth/signup',
+        body: {
+          'email': 'test@test.com',
+          'first_name': 'test',
+          'last_name': 'e2e',
+          'phone_number': '987123654',
+          'birth_date': '2001-01-01',
+          // 'password': '124356',
+        }
+      })
+      .then((result) => {
+        expect(result.statusCode).toEqual(200);
+        const resultBody = result.json()
+        accessToken = resultBody.access_token
+      });
+  });
+
+  it(`GET /posts with signup token`, () => {
+    return app
+      .inject({
+        method: 'GET',
+        url: '/posts',
+        headers: {
+          'authorization': `Bearer ${accessToken}`
+        }
+      })
+      .then((result) => {
+        expect(result.statusCode).toEqual(200);
+      });
+  });
+
   it(`POST /auth/login`, () => {
     return app
       .inject({
         method: 'POST',
         url: '/auth/login',
         body: {
-          'username': 'test',
+          'username': 'test@test.com',
           'password': '124356'
         }
       })
@@ -50,7 +85,7 @@ describe('Auth', () => {
       });
   });
 
-  it(`GET /posts`, () => {
+  it(`GET /posts with login token`, () => {
     return app
       .inject({
         method: 'GET',

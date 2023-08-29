@@ -17,5 +17,5 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 }
 
-export const IS_PUBLIC_KEY = 'isPublic';
+const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);

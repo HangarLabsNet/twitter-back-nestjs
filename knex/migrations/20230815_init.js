@@ -7,7 +7,11 @@ module.exports = {
     return knex.schema
       .createTable('user', t => {
         t.string('id').primary()
-        t.string('email')
+        t.string('first_name')
+        t.string('last_name')
+        t.string('email').index()
+        t.string('phone_number').index()
+        t.date('birth_date')
         t.dateTime('creation_dt').index()
       })
       .createTable('post', t => {

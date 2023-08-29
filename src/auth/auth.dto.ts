@@ -4,8 +4,9 @@ export class LoginDto {
 }
 
 export class SignupDto {
-  name: string
+  email: string
+  first_name: string
+  last_name: string
+  phone_number: string
   birth_date: string
-  phone_number?: string
-  email?: string
 }

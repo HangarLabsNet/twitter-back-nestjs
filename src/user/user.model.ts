@@ -1,5 +1,5 @@
 import { model } from "../objection/objection.model";
 
-export class PostModel extends model({
-  tableName: 'post'
+export class UserModel extends model({
+  tableName: 'user'
 }) {}
