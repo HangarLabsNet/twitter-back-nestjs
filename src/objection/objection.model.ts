@@ -1,6 +1,9 @@
 import { Model, QueryContext } from 'objection';
 import * as uuid from 'uuid'
 
+// crear una subclase por conexión a base de datos
+export class MainModel extends Model {}
+
 export function model(opts: {
   tableName: string,
   idField?: string,
@@ -13,7 +16,7 @@ export function model(opts: {
     autoCreationDt: true
   }, opts)
 
-  return class extends Model {
+  return class extends MainModel {
     static get tableName() {
       return fo.tableName
     }

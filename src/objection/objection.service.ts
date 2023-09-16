@@ -1,6 +1,6 @@
 import knex from 'knex'
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Model } from 'objection';
+import { MainModel } from './objection.model';
 
 @Injectable()
 export class ObjectionService implements OnModuleInit, OnModuleDestroy {
@@ -10,10 +10,10 @@ export class ObjectionService implements OnModuleInit, OnModuleDestroy {
       connection: process.env.DB_CONNECTION_STRING,
       pool: { min: 0, max: 10 }
     })
-    Model.knex(k)
+    MainModel.knex(k)
   }
 
   onModuleDestroy() {
-    Model.knex().destroy()
+    MainModel.knex().destroy()
   }
 }

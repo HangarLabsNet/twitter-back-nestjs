@@ -1,7 +1,7 @@
 export class ReadPostDto {
   id: string;
   content: string;
-  creationDt: string
+  creation_dt: string
 }
 
 export class CreatePostDto {

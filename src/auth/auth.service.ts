@@ -13,7 +13,7 @@ export class AuthService {
 
   async validateUser({ username, password }) {
     return password
-      ? await this.userService.findOneByEmailOrPhone(username) 
+      ? await this.userService.findOneByEmailOrPhone(username)
       : null
   }
 

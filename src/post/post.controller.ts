@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto, ReadPostDto } from './post.dto';
-import { PageDto } from 'src/common.dto';
+import { PageDto } from 'src/base/base.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('posts')
@@ -16,12 +16,12 @@ export class PostController {
   }
 
   @Post()
-  async create(@Body() post: CreatePostDto): Promise<ReadPostDto> {
-    return await this.postService.create(post);
+  async create(@Body() data: CreatePostDto, @Request() request): Promise<ReadPostDto> {
+    return await this.postService.create({ user_id: request.user.id, ...data });
   }
 
   @Get(':id')
   async findById(@Param('id') id: string): Promise<ReadPostDto> {
-    return await this.postService.findOne({ id });
+    return await this.postService.findFirst({ id });
   }
 }
