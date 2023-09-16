@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
+import { Logger, Body, Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { LoginDto, SignupDto } from './auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -9,6 +9,8 @@ import { UserService } from '../user/user.service';
 @Controller('auth')
 @ApiTags("auth")
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name)
+
   constructor(
     private authService: AuthService,
     private userService: UserService
@@ -18,7 +20,7 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Public()
-  async login(@Body() data: LoginDto, @Request() request) {
+  async login(@Request() request) {
     return this.authService.login(request.user)
   }
 
@@ -26,6 +28,7 @@ export class AuthController {
   @HttpCode(200)
   @Public()
   async signup(@Body() data: SignupDto) {
+    this.logger.debug(data)
     const user = await this.userService.create(data)
     return this.authService.login(user)
   }

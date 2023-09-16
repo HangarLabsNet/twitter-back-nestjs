@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, Logger } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto, ReadPostDto } from './post.dto';
 import { PageDto } from 'src/base/base.dto';
@@ -8,6 +8,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @ApiTags("posts")
 @ApiBearerAuth()
 export class PostController {
+  private readonly logger = new Logger(PostController.name)
+  
   constructor(private postService: PostService) {}
 
   @Get()
@@ -17,7 +19,8 @@ export class PostController {
 
   @Post()
   async create(@Body() data: CreatePostDto, @Request() request): Promise<ReadPostDto> {
-    return await this.postService.create({ user_id: request.user.id, ...data });
+    this.logger.debug({ user: request.user, data })
+    return await this.postService.create({ user_id: request.user.userId, ...data });
   }
 
   @Get(':id')
