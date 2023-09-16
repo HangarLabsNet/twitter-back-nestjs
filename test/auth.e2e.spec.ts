@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config()
 
+import { ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { FastifyAdapter, NestFastifyApplication } from "@nestjs/platform-fastify"
 import { AppModule } from '../src/app.module';
@@ -15,6 +16,10 @@ describe('Auth', () => {
     .compile();
 
     app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true
+    }));
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
@@ -42,7 +47,7 @@ describe('Auth', () => {
           'email': 'test@test.com',
           'first_name': 'test',
           'last_name': 'e2e',
-          'phone_number': '987123654',
+          'phone_number': '+51987123654',
           'birth_date': '2001-01-01',
           // 'password': '124356',
         }
